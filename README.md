@@ -1,3 +1,9 @@
+Original version by https://hub.docker.com/r/fauria/lamp
+
+# feikede changes
+* Remove postfix, add dummy smtp-agent to write mails to textfiles.
+* change mariadb server version to 5.5.60 (to test centos runtime system)
+
 fauria/lamp
 ==========
 
