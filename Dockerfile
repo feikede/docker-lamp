@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 MAINTAINER Rainer Feike, original by Fer Uria <fauria@gmail.com>
 LABEL Description="Cutting-edge LAMP stack, based on Ubuntu 16.04 LTS. Includes .htaccess support and popular PHP7 features, including composer and mail() function." \
 	License="Apache License 2.0" \
@@ -6,12 +6,20 @@ LABEL Description="Cutting-edge LAMP stack, based on Ubuntu 16.04 LTS. Includes 
 	Version="1.0"
 
 RUN apt-get update
+RUN apt-get install software-properties-common -y
+RUN apt update
 RUN apt-get upgrade -y
 
 COPY debconf.selections /tmp/
 RUN debconf-set-selections /tmp/debconf.selections
 
 RUN apt-get install -y zip unzip
+ENV LOG_LEVEL warn
+ENV ALLOW_OVERRIDE All
+ENV DATE_TIMEZONE Europe/Berlin
+ENV TERM dumb
+ENV TZ=Europe/Berlin
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN apt-get install -y \
 	php7.2 \
 	php7.2-bz2 \
@@ -25,12 +33,10 @@ RUN apt-get install -y \
 	php7.2-gd \
 	php7.2-gmp \
 	php7.2-imap \
-	php7.2-interbase \
 	php7.2-intl \
 	php7.2-json \
 	php7.2-ldap \
 	php7.2-mbstring \
-	php7.2-mcrypt \
 	php7.2-mysql \
 	php7.2-odbc \
 	php7.2-opcache \
@@ -41,7 +47,6 @@ RUN apt-get install -y \
 	php7.2-recode \
 	php7.2-snmp \
 	php7.2-sqlite3 \
-	php7.2-sybase \
 	php7.2-tidy \
 	php7.2-xmlrpc \
 	php7.2-xsl \
@@ -53,16 +58,11 @@ RUN npm install -g bower grunt-cli gulp
 
 ENV LOG_STDOUT **Boolean**
 ENV LOG_STDERR **Boolean**
-ENV LOG_LEVEL warn
-ENV ALLOW_OVERRIDE All
-ENV DATE_TIMEZONE UTC
-ENV TERM dumb
 
 COPY index.php /var/www/html/
 COPY run-lamp.sh /usr/sbin/
 
 RUN a2enmod rewrite
-RUN ln -s /usr/bin/nodejs /usr/bin/node
 RUN chmod +x /usr/sbin/run-lamp.sh
 RUN chown -R www-data:www-data /var/www/html
 
